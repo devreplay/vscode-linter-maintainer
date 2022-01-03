@@ -41,7 +41,8 @@
 				{
 					"command": "linter-maintainer.addRemoveESLintRules",
 					"group": "navigation",
-					"when": "resourceFilename == .eslintrc.json"
+					"when": "resourceFilename == .eslintrc.json",
+					"order": "0"
 				},
 				{
 					"command": "linter-maintainer.addESLintRules",
