@@ -1,4 +1,4 @@
-# linte-maintainer README
+# Linter Maintainer for Visual Studio Code
 
 This is the README for your extension "linte-maintainer". After writing up a brief description, we recommend including the following sections.
 

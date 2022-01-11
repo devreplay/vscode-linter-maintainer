@@ -1,7 +1,9 @@
 // The module 'vscode' contains the VS Code extensibility API
 // Import the module and reference it with the alias vscode in your code below
 import * as vscode from 'vscode';
-import * as path from 'path';
+// import * as path from 'path';
+import { ESLintTSManager } from 'linter-maintainer';
+import * as fs from 'fs';
 
 // this method is called when your extension is activated
 // your extension is activated the very first time the command is executed
@@ -16,61 +18,104 @@ export function activate(context: vscode.ExtensionContext) {
 	context.subscriptions.push(remove);
 }
 
-async function selectTargetPath() {
-	const activeDocument = vscode.window.activeTextEditor?.document;
-	if (!activeDocument) {
-		vscode.window.showErrorMessage('No file is open');
-		return;
-	}
-	const currentFileName = activeDocument.fileName;
+// async function selectTargetPath() {
+// 	const activeDocument = vscode.window.activeTextEditor?.document;
+// 	if (!activeDocument) {
+// 		vscode.window.showErrorMessage('No file is open');
+// 		return;
+// 	}
+// 	const currentFileName = activeDocument.fileName;
 
-	const fileDir = path.dirname(currentFileName);
-	const workingFolder = vscode.workspace.getWorkspaceFolder(activeDocument.uri);
+// 	const fileDir = path.dirname(currentFileName);
+// 	const workingFolder = vscode.workspace.getWorkspaceFolder(activeDocument.uri);
 
-	const targetOptions = [fileDir];
-	if (workingFolder && workingFolder.uri.fsPath !== fileDir) {
-		targetOptions.push(workingFolder.uri.fsPath);
-	}
-	targetOptions.push('Define by yourself');
+// 	const targetOptions = [fileDir];
+// 	if (workingFolder && workingFolder.uri.fsPath !== fileDir) {
+// 		targetOptions.push(workingFolder.uri.fsPath);
+// 	}
+// 	targetOptions.push('Define by yourself');
 
-	let targetPath = await vscode.window.showQuickPick(targetOptions,
-		{placeHolder: 'Select target folder path', canPickMany: false});
+// 	let targetPath = await vscode.window.showQuickPick(targetOptions,
+// 		{placeHolder: 'Select target folder path', canPickMany: false});
 
-	if (targetPath && targetPath === 'Define by yourself') {
-		targetPath = await vscode.window.showInputBox({placeHolder: 'Enter new path'});
-	}
+// 	if (targetPath && targetPath === 'Define by yourself') {
+// 		targetPath = await vscode.window.showInputBox({placeHolder: 'Enter new path'});
+// 	}
 
-	return targetPath;
-}
+// 	return targetPath;
+// }
 
 async function addRemoveRules() {
-	const targetPath = await selectTargetPath();
-	if (!targetPath) {
-		return;
-	}
-	
-	console.log(targetPath);
 	addRules();
 	removeRules();
 }
 
 async function addRules() {
-	const targetPath = await selectTargetPath();
-	if (!targetPath) {
+	const activeDocument = vscode.window.activeTextEditor?.document;
+	if (!activeDocument) {
+		vscode.window.showErrorMessage('No file is open');
 		return;
 	}
-	const addedRulesNum = 5;
-	vscode.window.showInformationMessage(`Added ${addedRulesNum} rules`);
+	const currentFilePath = activeDocument.uri.path;
+	const eslintManager = new ESLintTSManager(currentFilePath);
+
+	let FN: string[] = [];
+	try {
+		FN = await eslintManager.getFalseNegative();
+	} catch(e) {
+		console.log(e);
+		vscode.window.showErrorMessage('Failed to add rules');
+		return;
+	}
+	if (FN.length === 0) {
+		vscode.window.showInformationMessage('No rules to add');
+		return;
+	}
+	const newConfig = eslintManager.enableRules(FN, currentFilePath);
+
+	try {
+		fs.writeFileSync(currentFilePath, newConfig);
+	} catch {
+		vscode.window.showErrorMessage('Failed to write new config');
+		return;
+	}
+
+	vscode.window.showInformationMessage(`Added ${FN.length} rules`);
 }
 
 async function removeRules() {
-	const targetPath = await selectTargetPath();
-	if (!targetPath) {
+	const activeDocument = vscode.window.activeTextEditor?.document;
+	if (!activeDocument) {
+		vscode.window.showErrorMessage('No file is open');
+		return;
+	}
+	const currentFilePath = activeDocument.uri.path;
+	const eslintManager = new ESLintTSManager(currentFilePath);
+
+	let FP: string[] = [];
+	try {
+		FP = await eslintManager.getFalsePositive();
+		if (FP.length === 0) {
+			vscode.window.showInformationMessage('No rules to remove');
+			return;
+		}
+	} catch(e) {
+		console.log(e);
+		vscode.window.showErrorMessage('Failed to remove rules');
 		return;
 	}
 
-	const removedRulesNum = 5;
-	vscode.window.showInformationMessage(`Removed ${removedRulesNum} rules`);
+	const newConfig = eslintManager.disableRules(FP, currentFilePath);
+
+	console.log(newConfig);
+	try {
+		fs.writeFileSync(currentFilePath, newConfig);
+	} catch {
+		vscode.window.showErrorMessage('Failed to write new config');
+		return;
+	}
+
+	vscode.window.showInformationMessage(`Removed ${FP.length} rules`);
 }
 
 
