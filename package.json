@@ -1,7 +1,7 @@
 {
   "name": "linter-maintainer",
 	"displayName": "linter-maintainer",
-	"description": "Update ESLint/Pylint config file",
+	"description": "Update ESLint config file",
 	"version": "0.0.1",
 	"license": "MIT",
 	"engines": {

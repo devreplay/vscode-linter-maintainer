@@ -2,7 +2,7 @@
 
 Linter Maintainer suitables the ESLint configuration for current source code.
 
-![Usage](./images/usage.gif)
+![Usage](https://raw.githubusercontent.com/devreplay/vscode-linter-maintainer/master/images/usage.gif)
 
 ## Supporting Status
 
@@ -11,4 +11,4 @@ ESLint: [ESLint](https://eslint.org/)
 * `.eslintrc.json`, `.eslintrc.yaml`, `.eslintrc.yml`
 * TODO: `.eslintignore`, `.eslintrc.js`
 
-TODO: PMD, Pylint
+TODO: Support PMD, Pylint
