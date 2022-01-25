@@ -1,15 +1,32 @@
 {
   "name": "linter-maintainer",
-	"displayName": "linter-maintainer",
+	"displayName": "Linter Maintainer",
 	"description": "Update ESLint config file",
+	"icon": "linter-maintainer.png",
 	"version": "0.0.1",
-	"license": "MIT",
+	"license": "SEE LICENSE IN LICENSE",
+	"author": "Yuki Ueda",
+	"publisher": "Ikuyadeu",
+	"keywords": [
+		"linter",
+		"eslint",
+		"linter-maintainer"
+	],
+	"categories": [
+		"Linters",
+		"Formatters",
+		"Other"
+	],
+	"repository": {
+		"type": "git",
+		"url": "https://github.com/devreplay/vscode-linter-maintainer"
+	},
+	"bugs": {
+		"url": "https://github.com/devreplay/vscode-linter-maintainer/issues"
+	},
 	"engines": {
 		"vscode": "^1.63.1"
 	},
-	"categories": [
-		"Other"
-	],
 	"activationEvents": [
         "onCommand:linter-maintainer.addRemoveESLintRules",
 		"onCommand:linter-maintainer.addESlintRules",
